@@ -4,15 +4,18 @@ import os
 
 st.set_page_config(layout="wide")
 
-# Correct path for Streamlit Cloud
-build_dir = os.path.join(os.path.dirname(__file__), "dist")
-html_file = os.path.join(build_dir, "index.html")
+# Path to React build folder
+build_dir = os.path.join(os.getcwd(), "dist")
 
-if os.path.exists(html_file):
-    with open(html_file, "r", encoding="utf-8") as f:
-        html_content = f.read()
+index_file = os.path.join(build_dir, "index.html")
 
-    components.html(html_content, height=900, scrolling=True)
+# Read index.html
+with open(index_file, "r", encoding="utf-8") as f:
+    html = f.read()
 
-else:
-    st.error("React build not found. Run npm run build.")
+# Fix asset paths for Streamlit
+html = html.replace('src="/', 'src="./')
+html = html.replace('href="/', 'href="./')
+
+# Show React app
+components.html(html, height=900, scrolling=True)
