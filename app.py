@@ -1,21 +1,15 @@
-import streamlit as st
-import streamlit.components.v1 as components
+from flask import Flask, send_from_directory
 import os
 
-st.set_page_config(layout="wide")
+app = Flask(__name__, static_folder="dist", static_url_path="")
 
-# Path to React build folder
-build_dir = os.path.join(os.getcwd(), "dist")
+@app.route("/")
+def serve():
+    return send_from_directory("dist", "index.html")
 
-index_file = os.path.join(build_dir, "index.html")
+@app.route("/<path:path>")
+def static_files(path):
+    return send_from_directory("dist", path)
 
-# Read index.html
-with open(index_file, "r", encoding="utf-8") as f:
-    html = f.read()
-
-# Fix asset paths for Streamlit
-html = html.replace('src="/', 'src="./')
-html = html.replace('href="/', 'href="./')
-
-# Show React app
-components.html(html, height=900, scrolling=True)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8501)
